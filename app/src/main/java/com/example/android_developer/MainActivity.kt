@@ -2,17 +2,18 @@ package com.example.android_developer
 
 import android.graphics.Color
 import android.os.Bundle
-import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.SystemBarStyle
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import com.example.android_developer.ui.theme.AndroidDeveloperTheme
-import com.example.cryptograph.Test
+import com.example.cryptograph.CryptoSession
+import com.example.cryptograph.CryptoSessionImpl
 
 
 class MainActivity : ComponentActivity() {
 
+    val session : CryptoSession = CryptoSessionImpl()
     override fun onCreate(savedInstanceState: Bundle?) {
         enableEdgeToEdge(
             statusBarStyle = SystemBarStyle.light(
@@ -23,7 +24,6 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             AndroidDeveloperTheme {
-                Toast.makeText(this, "${Test.test()}", Toast.LENGTH_LONG).show()
 
             }
         }
