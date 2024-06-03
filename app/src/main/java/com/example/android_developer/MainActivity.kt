@@ -7,10 +7,15 @@ import androidx.activity.ComponentActivity
 import androidx.activity.SystemBarStyle
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
 import com.example.android_developer.ui.theme.AndroidDeveloperTheme
 import com.example.cryptograph.CryptoSession
 import com.example.cryptograph.CryptoSessionImpl
@@ -39,20 +44,27 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun Test(session: CryptoSession) {
     val coroutineScope = rememberCoroutineScope()
-    Button(
-        onClick = {
-            val key = session.getAESService().generateKey(128)
-            Log.d("key", "key ${session.getAESService().convertKeyToString(key)}")
-            val textToEncrypt = "Hello world I'm here"
-            coroutineScope.launch {
-                val encryptedText = session.getAESService().encryptText(textToEncrypt, key)
-                Log.d("key", "EncryptedText = $encryptedText")
-                val decryptedText = session.getAESService().decryptText(encryptedText!!,key)
-                Log.d("", "DecryptedText = $decryptedText")
+    Column(
+        modifier = Modifier
+            .fillMaxSize(),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ){
+        Button(
+            onClick = {
+                val key = session.getAESService().generateKey(128)
+                Log.d("key", "key ${session.getAESService().convertKeyToString(key)}")
+                val textToEncrypt = "Hello world I'm here"
+                coroutineScope.launch {
+                    val encryptedText = session.getAESService().encryptText(textToEncrypt, key)
+                    Log.d("key", "EncryptedText = $encryptedText")
+                    val decryptedText = session.getAESService().decryptText(encryptedText!!, key)
+                    Log.d("", "DecryptedText = $decryptedText")
+                }
             }
+        ) {
+            Text(text = "Click")
         }
-    ) {
-        Text(text = "Click")
     }
 
 }
