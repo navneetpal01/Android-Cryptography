@@ -27,6 +27,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.io.File
+import java.util.UUID
 
 
 class MainActivity : ComponentActivity() {
@@ -36,7 +37,9 @@ class MainActivity : ComponentActivity() {
     **/
     private val session : CryptoSession = CryptoSessionImpl()
     private val aesService = session.getAESService()
+    private val aeskey = aesService.generateKey(128)
     private var filePickerLauncher: ActivityResultLauncher<String>? = null
+
 
     override fun onStart() {
         super.onStart()
@@ -61,8 +64,23 @@ class MainActivity : ComponentActivity() {
                 val pathToEncrypt = osDownloadDirectory() + fileName + ".enc"
                 val encryptedFile = File(pathToEncrypt)
                 fileToEncrypt?.let {
+                    //Running on Main thread cause our functions are using withContext to change Threads
                     CoroutineScope(Dispatchers.Main).launch {
-                        aesService.encryptFile(it,encryptedFile, key)
+                        aesService.encryptFile(it,encryptedFile, aeskey)?.let { encrypted ->
+                            Log.d("file", "Encrypted file path - ${encrypted.path}")
+                            val decryptedOutput = osDownloadDirectory() + "decrypted-${
+                                UUID.randomUUID().toString().substring(0,4)
+                            }" + fileName
+                            val decryptedOutputFile = File(decryptedOutput)
+                            aesService.decryptFile(
+                                encrypted,
+                                decryptedOutputFile,
+                                aeskey
+                            )?.let {
+                                Log.d("file", "Decrypted file path - ${it.path}")
+                            }
+
+                        }
                     }
                 }
             }
