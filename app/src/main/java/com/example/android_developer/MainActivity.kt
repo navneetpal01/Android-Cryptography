@@ -7,6 +7,8 @@ import androidx.activity.ComponentActivity
 import androidx.activity.SystemBarStyle
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -25,6 +27,21 @@ import kotlinx.coroutines.launch
 class MainActivity : ComponentActivity() {
 
     val session: CryptoSession = CryptoSessionImpl()
+    private var filePickerLauncher: ActivityResultLauncher<String>? = null
+
+    override fun onStart() {
+        super.onStart()
+        filePickerLauncher = registerForActivityResult(
+            contract = ActivityResultContracts.GetContent()
+        ) { uri ->
+            if (uri != null) {
+
+            }
+
+        }
+
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         enableEdgeToEdge(
             statusBarStyle = SystemBarStyle.light(
@@ -41,6 +58,31 @@ class MainActivity : ComponentActivity() {
     }
 }
 
+// Encrypt File
+@Composable
+fun Test2(session: CryptoSession) {
+    val coroutineScope = rememberCoroutineScope()
+    Column(
+        modifier = Modifier
+            .fillMaxSize(),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
+        Button(
+            onClick = {
+                val key = session.getAESService().generateKey(128)
+                coroutineScope.launch {
+
+                }
+            }
+        ) {
+            Text(text = "Click")
+        }
+    }
+
+}
+
+// Encrypt Text
 @Composable
 fun Test(session: CryptoSession) {
     val coroutineScope = rememberCoroutineScope()
@@ -49,7 +91,7 @@ fun Test(session: CryptoSession) {
             .fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
-    ){
+    ) {
         Button(
             onClick = {
                 val key = session.getAESService().generateKey(128)
