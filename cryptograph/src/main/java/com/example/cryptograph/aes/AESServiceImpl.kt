@@ -2,6 +2,7 @@ package com.example.cryptograph.aes
 
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import java.io.File
 import java.util.Arrays
 import java.util.Base64
 import javax.crypto.Cipher
@@ -63,6 +64,14 @@ class AESServiceImpl : AESService {
             }
             return@withContext decryptedText
         }
+    }
+
+    override suspend fun encryptFile(inputFile: File, outputFile: File, key: SecretKey): File? {
+        TODO("Not yet implemented")
+    }
+
+    override suspend fun decryptFile(encryptedFile: File, outputFile: File, key: SecretKey): File? {
+        TODO("Not yet implemented")
     }
 
 }
