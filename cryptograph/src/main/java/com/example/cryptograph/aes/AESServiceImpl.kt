@@ -10,6 +10,7 @@ import java.security.Security
 import java.util.Arrays
 import java.util.Base64
 import javax.crypto.Cipher
+import javax.crypto.CipherInputStream
 import javax.crypto.CipherOutputStream
 import javax.crypto.KeyGenerator
 import javax.crypto.SecretKey
@@ -98,7 +99,31 @@ class AESServiceImpl : AESService {
     }
 
     override suspend fun decryptFile(encryptedFile: File, outputFile: File, key: SecretKey): File? {
-        TODO("Not yet implemented")
+        return withContext(Dispatchers.IO){
+            return@withContext try {
+                Security.addProvider(BouncyCastleProvider())
+                val encryptedDataInputStream = FileInputStream(encryptedFile)
+                val iv = ByteArray(ivSize)
+                encryptedDataInputStream.read(iv,0,ivSize)
+
+                cipher.init(Cipher.DECRYPT_MODE,key,IvParameterSpec(iv))
+
+                val outputStream = FileOutputStream(outputFile)
+                val cipherInputStream = CipherInputStream(encryptedDataInputStream,cipher)
+                val buffer = ByteArray(1024)
+                var bytesRead : Int
+
+                while (cipherInputStream.read(buffer).also { bytesRead = it } != -1){
+                    outputStream.write(buffer,0,bytesRead)
+                }
+                outputStream.close()
+                cipherInputStream.close()
+                outputFile
+            }catch (e : Exception){
+                e.printStackTrace()
+                null
+            }
+        }
     }
 
 }
