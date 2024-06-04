@@ -49,6 +49,7 @@ class MainActivity : ComponentActivity() {
             if (uri != null) {
                 //Replace function replaces the old substring with a new substring
                 val fileName = FileHelper.getFileName(contentResolver,uri).replace("","")
+                
 
                 //Split 'file Name' into parts (name, extension) and remove trailing empty strings
                 val split = fileName.split("\\.".toRegex()).dropLastWhile { it.isEmpty() }

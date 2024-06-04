@@ -42,6 +42,7 @@ object FileHelper {
                 customFile = File(context.cacheDir, fileName)
             }
 
+            //read data from the input stream in chunks of 8 KB, store it in the buffer
             FileOutputStream(customFile).use { outputStream ->
                 inputStream.copyTo(outputStream, bufferSize = 8 * 1024)
             }
