@@ -29,6 +29,7 @@ class RSAServiceImpl : RSAService {
 
     override fun convertKeyPairToString(keypair: KeyPair): Pair<String, String> {
         //Public encoded returns us Byte Array
+        //takes binary data and converts it into a text format
         val publicKey = Base64.getEncoder().encodeToString(keypair.public.encoded)
         val privateKey = Base64.getEncoder().encodeToString(keypair.private.encoded)
         return publicKey to privateKey
@@ -50,7 +51,7 @@ class RSAServiceImpl : RSAService {
     }
 
     override suspend fun encryptText(text: String, publicKey: PublicKey): String? {
-        return withContext(Dispatchers.IO){
+        return withContext(Dispatchers.Default){
             rsaCipher.init(Cipher.ENCRYPT_MODE,publicKey)
             val encryptedBytes = try {
                 rsaCipher.doFinal(text.toByteArray())
@@ -63,7 +64,7 @@ class RSAServiceImpl : RSAService {
     }
 
     override suspend fun encryptText(text: String, privateKey: PrivateKey): String? {
-        return withContext(Dispatchers.IO){
+        return withContext(Dispatchers.Default){
             rsaCipher.init(Cipher.ENCRYPT_MODE,privateKey)
             val encryptedBytes = try {
                 rsaCipher.doFinal(text.toByteArray())
@@ -76,12 +77,37 @@ class RSAServiceImpl : RSAService {
     }
 
     override suspend fun decryptText(decryptText: String, privateKey: PrivateKey): String? {
-        TODO("Not yet implemented")
+        return withContext(Dispatchers.Default){
+            rsaCipher.init(Cipher.DECRYPT_MODE,privateKey)
+            val decodedDataBytes = Base64.getDecoder().decode(decryptText)
+            return@withContext try {
+                val decryptedBytes = rsaCipher.doFinal(decodedDataBytes)
+                String(decryptedBytes)
+            }catch (e : Exception){
+                e.printStackTrace()
+                null
+            }
+
+        }
     }
 
     override suspend fun decryptText(decryptText: String, publicKey: PublicKey): String? {
-        TODO("Not yet implemented")
+        return withContext(Dispatchers.Default){
+            rsaCipher.init(Cipher.DECRYPT_MODE,publicKey)
+            val decodedDataBytes = Base64.getDecoder().decode(decryptText)
+            return@withContext try {
+                val decryptedBytes = rsaCipher.doFinal(decodedDataBytes)
+                String(decryptedBytes)
+            }catch (e : Exception){
+                e.printStackTrace()
+                null
+            }
+
+        }
     }
+
+
+
 
 
 }

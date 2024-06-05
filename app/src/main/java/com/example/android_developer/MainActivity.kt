@@ -35,6 +35,8 @@ class MainActivity : ComponentActivity() {
     /** For String Encrypt
     val session: CryptoSession = CryptoSessionImpl()
     **/
+
+
     private val session : CryptoSession = CryptoSessionImpl()
     private val aesService = session.getAESService()
     private val aeskey = aesService.generateKey(128)
