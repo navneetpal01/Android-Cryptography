@@ -10,12 +10,16 @@ import java.security.PublicKey
 import java.security.spec.PKCS8EncodedKeySpec
 import java.security.spec.X509EncodedKeySpec
 import java.util.Base64
+import javax.crypto.Cipher
 
 
 class RSAServiceImpl : RSAService {
 
     private val keyPairGenerator = KeyPairGenerator.getInstance("RSA")
-    val keyFactory = KeyFactory.getInstance("RSA")
+    private val keyFactory = KeyFactory.getInstance("RSA")
+    private val assymetricAlgorithm = "RSA/ECB/PKCS1Padding"
+    private val rsaCipher = Cipher.getInstance(assymetricAlgorithm)
+
 
 
     override fun generateRSAKeyPair(keySize: Int): KeyPair {
@@ -47,12 +51,28 @@ class RSAServiceImpl : RSAService {
 
     override suspend fun encryptText(text: String, publicKey: PublicKey): String? {
         return withContext(Dispatchers.IO){
-            return@withContext ""
+            rsaCipher.init(Cipher.ENCRYPT_MODE,publicKey)
+            val encryptedBytes = try {
+                rsaCipher.doFinal(text.toByteArray())
+            }catch (e : Exception){
+                e.printStackTrace()
+                return@withContext null
+            }
+            return@withContext Base64.getEncoder().encodeToString(encryptedBytes)
         }
     }
 
     override suspend fun encryptText(text: String, privateKey: PrivateKey): String? {
-        TODO("Not yet implemented")
+        return withContext(Dispatchers.IO){
+            rsaCipher.init(Cipher.ENCRYPT_MODE,privateKey)
+            val encryptedBytes = try {
+                rsaCipher.doFinal(text.toByteArray())
+            }catch (e : Exception){
+                e.printStackTrace()
+                return@withContext null
+            }
+            return@withContext Base64.getEncoder().encodeToString(encryptedBytes)
+        }
     }
 
     override suspend fun decryptText(decryptText: String, privateKey: PrivateKey): String? {
