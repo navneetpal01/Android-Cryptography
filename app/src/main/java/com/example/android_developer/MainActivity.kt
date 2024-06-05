@@ -21,6 +21,7 @@ import androidx.compose.ui.Modifier
 import com.example.android_developer.ui.theme.AndroidDeveloperTheme
 import com.example.cryptograph.CryptoSession
 import com.example.cryptograph.CryptoSessionImpl
+import com.example.cryptograph.rsa.RSAService
 import com.example.cryptograph.utils.FileHelper
 import com.example.cryptograph.utils.osDownloadDirectory
 import kotlinx.coroutines.CoroutineScope
@@ -34,13 +35,15 @@ class MainActivity : ComponentActivity() {
 
     /** For String Encrypt
     val session: CryptoSession = CryptoSessionImpl()
-    **/
+     **/
 
 
-    private val session : CryptoSession = CryptoSessionImpl()
+    private val session: CryptoSession = CryptoSessionImpl()
     private val aesService = session.getAESService()
     private val aeskey = aesService.generateKey(128)
     private var filePickerLauncher: ActivityResultLauncher<String>? = null
+
+    private val rsaService = session.getRsaService()
 
 
     override fun onStart() {
@@ -50,8 +53,8 @@ class MainActivity : ComponentActivity() {
         ) { uri ->
             if (uri != null) {
                 //Replace function replaces the old substring with a new substring
-                val fileName = FileHelper.getFileName(contentResolver,uri).replace("","")
-                
+                val fileName = FileHelper.getFileName(contentResolver, uri).replace("", "")
+
 
                 //Split 'file Name' into parts (name, extension) and remove trailing empty strings
                 val split = fileName.split("\\.".toRegex()).dropLastWhile { it.isEmpty() }
@@ -69,10 +72,10 @@ class MainActivity : ComponentActivity() {
                 fileToEncrypt?.let {
                     //Running on Main thread cause our functions are using withContext to change Threads
                     CoroutineScope(Dispatchers.Main).launch {
-                        aesService.encryptFile(it,encryptedFile, aeskey)?.let { encrypted ->
+                        aesService.encryptFile(it, encryptedFile, aeskey)?.let { encrypted ->
                             Log.d("file", "Encrypted file path - ${encrypted.path}")
                             val decryptedOutput = osDownloadDirectory() + "decrypted-${
-                                UUID.randomUUID().toString().substring(0,4)
+                                UUID.randomUUID().toString().substring(0, 4)
                             }" + fileName
                             val decryptedOutputFile = File(decryptedOutput)
                             aesService.decryptFile(
@@ -102,15 +105,44 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             AndroidDeveloperTheme {
-                Test2(launcher = filePickerLauncher)
+//                Test2(launcher = filePickerLauncher)
+                Test3(service = rsaService)
             }
         }
     }
 }
 
+@Composable
+fun Test3(service: RSAService) {
+    val coroutineScope = rememberCoroutineScope()
+    val textToEncrypt = "Hello How are you Meeva"
+    val TAG = "Main Activity"
+    Button(
+        onClick = {
+            coroutineScope.launch {
+                val keyPair = service.generateRSAKeyPair(2048)
+                val converted = service.convertKeyPairToString(keyPair)
+                Log.d("app", "Here is the private Key ${converted.second}")
+                Log.d("app", "Here is the public Key ${converted.first}")
+                val encryptedText = service.encryptText(textToEncrypt,keyPair.public)
+                encryptedText?.let { 
+                    service.decryptText(it,keyPair.private)?.let {decrypted ->
+                        Log.d("app", "decrypted Text ${decrypted}")
+
+                    }
+                }
+            }
+        }
+    ) {
+        Text(text = "Click")
+    }
+
+}
+
+
 // Encrypt File
 @Composable
-fun Test2(launcher : ActivityResultLauncher<String>?) {
+fun Test2(launcher: ActivityResultLauncher<String>?) {
     val coroutineScope = rememberCoroutineScope()
     Column(
         modifier = Modifier

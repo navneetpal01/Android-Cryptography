@@ -14,8 +14,8 @@ interface RSAService {
     suspend fun encryptText(text: String, publicKey: PublicKey): String?
     suspend fun encryptText(text: String, privateKey: PrivateKey): String?
 
-    suspend fun decryptText(decryptText: String, privateKey: PrivateKey): String?
-    suspend fun decryptText(decryptText: String, publicKey: PublicKey): String?
+    suspend fun decryptText(encryptedText: String, privateKey: PrivateKey): String?
+    suspend fun decryptText(encryptedText: String, publicKey: PublicKey): String?
 
 
 }

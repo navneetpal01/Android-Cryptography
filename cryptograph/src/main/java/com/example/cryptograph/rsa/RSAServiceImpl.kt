@@ -76,10 +76,10 @@ class RSAServiceImpl : RSAService {
         }
     }
 
-    override suspend fun decryptText(decryptText: String, privateKey: PrivateKey): String? {
+    override suspend fun decryptText(encryptedText: String, privateKey: PrivateKey): String? {
         return withContext(Dispatchers.Default){
             rsaCipher.init(Cipher.DECRYPT_MODE,privateKey)
-            val decodedDataBytes = Base64.getDecoder().decode(decryptText)
+            val decodedDataBytes = Base64.getDecoder().decode(encryptedText)
             return@withContext try {
                 val decryptedBytes = rsaCipher.doFinal(decodedDataBytes)
                 String(decryptedBytes)
@@ -91,10 +91,10 @@ class RSAServiceImpl : RSAService {
         }
     }
 
-    override suspend fun decryptText(decryptText: String, publicKey: PublicKey): String? {
+    override suspend fun decryptText(encryptedText: String, publicKey: PublicKey): String? {
         return withContext(Dispatchers.Default){
             rsaCipher.init(Cipher.DECRYPT_MODE,publicKey)
-            val decodedDataBytes = Base64.getDecoder().decode(decryptText)
+            val decodedDataBytes = Base64.getDecoder().decode(encryptedText)
             return@withContext try {
                 val decryptedBytes = rsaCipher.doFinal(decodedDataBytes)
                 String(decryptedBytes)
