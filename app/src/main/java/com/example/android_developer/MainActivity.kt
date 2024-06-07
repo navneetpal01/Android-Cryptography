@@ -44,6 +44,7 @@ class MainActivity : ComponentActivity() {
     private var filePickerLauncher: ActivityResultLauncher<String>? = null
 
     private val rsaService = session.getRsaService()
+    private val hashService = session.getHashService(CryptoSession.HashFunctions.MD5)
 
 
     override fun onStart() {
