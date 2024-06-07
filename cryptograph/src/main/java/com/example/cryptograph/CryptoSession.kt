@@ -1,6 +1,7 @@
 package com.example.cryptograph
 
 import com.example.cryptograph.aes.AESService
+import com.example.cryptograph.digitalSignature.DigitalSignatureService
 import com.example.cryptograph.hash.HashService
 import com.example.cryptograph.rsa.RSAService
 
@@ -13,8 +14,7 @@ interface CryptoSession{
     fun getAESService() : AESService
     fun getRsaService() : RSAService
     fun getHashService(function : HashFunctions) : HashService
-
-
+    fun getDigitalSignatureService(rsaService: RSAService? = null): DigitalSignatureService
 
 
 }

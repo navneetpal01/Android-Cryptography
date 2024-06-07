@@ -43,6 +43,9 @@ class MainActivity : ComponentActivity() {
     private val rsaService = session.getRsaService()
     private val hashService = session.getHashService(CryptoSession.HashFunctions.MD5)
 
+    private val digitalSignatureService = session.getDigitalSignatureService(rsaService)
+    val keyPair = rsaService.generateRSAKeyPair(2048)
+
 
     override fun onStart() {
         super.onStart()
@@ -67,11 +70,19 @@ class MainActivity : ComponentActivity() {
                 //Part of Hashing
                 fileToEncrypt?.let { file ->
                     CoroutineScope(Dispatchers.Main).launch {
-                        val textToHash = "Some Random Text To Hash"
                         val hashedFile = hashService.hash(file)
-                        val hashedText = hashService.hash(textToHash)
-                        Log.d("Hash", "onStart: hashedFile = ${hashedFile.toList()}")
-                        Log.d("Hash", "onStart: hashedText = ${hashedText.toList()}")
+                        //Part of Signature
+                        val signature = digitalSignatureService.sign(String(hashedFile),keyPair.private)
+
+                        val isSignatureValid = signature?.let { digitalSignatureService.verify(it,String(hashedFile),keyPair.public) }
+
+                        Log.d("Signature", "onStart: is sign valid $isSignatureValid")
+
+                        //Part of Hashing
+//                        val textToHash = "Some Random Text To Hash"
+//                        val hashedText = hashService.hash(textToHash)
+//                        Log.d("Hash", "onStart: hashedFile = ${hashedFile.toList()}")
+//                        Log.d("Hash", "onStart: hashedText = ${hashedText.toList()}")
                     }
                 }
 

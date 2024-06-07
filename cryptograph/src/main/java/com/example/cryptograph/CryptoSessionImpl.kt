@@ -2,6 +2,8 @@ package com.example.cryptograph
 
 import com.example.cryptograph.aes.AESService
 import com.example.cryptograph.aes.AESServiceImpl
+import com.example.cryptograph.digitalSignature.DigitalSignatureService
+import com.example.cryptograph.digitalSignature.RSADigitalSignatureService
 import com.example.cryptograph.hash.HashService
 import com.example.cryptograph.hash.MD5Hash
 import com.example.cryptograph.hash.SHA256Hash
@@ -27,5 +29,10 @@ class CryptoSessionImpl : CryptoSession{
             CryptoSession.HashFunctions.MD5 -> MD5Hash()
         }
     }
+
+    override fun getDigitalSignatureService(rsaService: RSAService?): DigitalSignatureService {
+        return RSADigitalSignatureService(rsaService ?: RSAServiceImpl())
+    }
+
 
 }
