@@ -69,10 +69,10 @@ class MainActivity : ComponentActivity() {
 
                 val pathToEncrypt = osDownloadDirectory() + fileName + ".enc"
                 val encryptedFile = File(pathToEncrypt)
-                fileToEncrypt?.let {
+                fileToEncrypt?.let {file ->
                     //Running on Main thread cause our functions are using withContext to change Threads
                     CoroutineScope(Dispatchers.Main).launch {
-                        aesService.encryptFile(it, encryptedFile, aeskey)?.let { encrypted ->
+                        aesService.encryptFile(file, encryptedFile, aeskey)?.let { encrypted ->
                             Log.d("file", "Encrypted file path - ${encrypted.path}")
                             val decryptedOutput = osDownloadDirectory() + "decrypted-${
                                 UUID.randomUUID().toString().substring(0, 4)
